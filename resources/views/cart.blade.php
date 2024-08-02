@@ -79,7 +79,7 @@
                 },
                 success: function(response) {
                     ele.closest("tr").find(".subtotal").text("Rp. " + (price * quantity));
-                    $("#total").text(response.total);
+                    $("#total").text("Rp. " + response.total);
                 }
             });
         });

@@ -13,7 +13,7 @@ class ProductController extends Controller
         $cart = session()->get('cart', []);
         return array_sum(array_column($cart, 'quantity'));
     }
-    
+
     public function showProducts()
     {
         $products = Product::all();
@@ -105,8 +105,12 @@ class ProductController extends Controller
             $cart[$request->id]['quantity'] = $request->quantity;
             session()->put('cart', $cart);
 
+            $total = 0;
+            foreach ($cart as $details) {
+                $total += $details['price'] * $details['quantity'];
+            }
+
             $subtotal = $cart[$request->id]['price'] * $cart[$request->id]['quantity'];
-            $total = array_sum(array_column($cart, 'quantity')) * $cart[$request->id]['price'];
 
             return response()->json([
                 'subtotal' => $subtotal,
