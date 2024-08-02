@@ -30,7 +30,7 @@
                     </div>
                 </td>
                 <td data-th="Quantity">
-                    <input type="number" value="{{ $details['quantity'] }}" class="form-control quantity" data-id="{{ $id }}" data-price="{{ $details['price'] }}" />
+                    <input type="number" value="{{ $details['quantity'] }}" class="form-control quantity" data-id="{{ $id }}" data-price="{{ $details['price'] }}" min="1" />
                 </td>
                 <td data-th="Subtotal" class="text-center subtotal" data-id="{{ $id }}">Rp. {{ $details['price'] * $details['quantity'] }}</td>
                 <td class="actions" data-th="">
@@ -43,10 +43,13 @@
         <tfoot>
             @if(session('cart'))
             <tr>
-                <td colspan="2" class="text-left"></td>
+                <td colspan="2" class="text-left">
+                    
+                </td>
                 <td class="text-center"><strong>Total Rp. <span id="total">{{ $total }}</span></strong></td>
                 <td>
-                    <a href="" class="btn btn-warning btn-block">Proceed to Checkout</a>
+                    <a href="clear-cart" class="btn btn-dark btn-block">Clear</a>
+                    <a href="payment" class="btn btn-warning btn-block"><strong><i class="bi bi-cart-fill">Checkout</i></strong></a>
                 </td>
             </tr>
             @else

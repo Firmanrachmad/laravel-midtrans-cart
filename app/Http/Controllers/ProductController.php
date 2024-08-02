@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Midtrans\Snap;
 
 class ProductController extends Controller
 {
@@ -12,6 +13,13 @@ class ProductController extends Controller
         $cart = session()->get('cart', []);
         return array_sum(array_column($cart, 'quantity'));
     }
+    
+    public function showProducts()
+    {
+        $products = Product::all();
+        $totalItems = $this->getCartItemCount();
+        return view('welcome', compact('products', 'totalItems'));
+    }
 
     public function showCartTable()
     {
@@ -19,7 +27,7 @@ class ProductController extends Controller
         $totalItems = $this->getCartItemCount();
         return view('cart', compact('products', 'totalItems'));
     }
-    
+
     public function addToCart($id)
     {
         $product = Product::find($id);
@@ -114,10 +122,34 @@ class ProductController extends Controller
         return redirect()->back();
     }
 
-    public function showProducts()
+    public function checkout()
     {
-        $products = Product::all();
         $totalItems = $this->getCartItemCount();
-        return view('welcome', compact('products', 'totalItems'));
+        // Set your Merchant Server Key
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        \Midtrans\Config::$isProduction = false;
+        // Set sanitization on (default)
+        \Midtrans\Config::$isSanitized = true;
+        // Set 3DS transaction for credit card to true
+        \Midtrans\Config::$is3ds = true;
+
+        $cart = session()->get('cart', []);
+        $totalAmount = 0;
+
+        foreach ($cart as $item) {
+            $totalAmount += $item['price'] * $item['quantity'];
+        }
+
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => rand(),
+                'gross_amount' => $totalAmount,
+            ),
+        );
+
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+        return view('checkout', ['snapToken' => $snapToken], ['totalItems' => $totalItems]);
     }
 }

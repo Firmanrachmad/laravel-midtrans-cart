@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Shop Homepage - Start Bootstrap Template</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
@@ -32,6 +33,7 @@
                         Cart
                         <span class="badge bg-dark text-white ms-1 rounded-pill">{{$totalItems}}</span>
                     </button>
+                    
                 </form>
             </div>
         </div>
