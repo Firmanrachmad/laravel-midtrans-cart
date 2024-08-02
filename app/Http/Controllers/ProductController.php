@@ -7,12 +7,19 @@ use App\Models\Product;
 
 class ProductController extends Controller
 {
+    private function getCartItemCount()
+    {
+        $cart = session()->get('cart', []);
+        return array_sum(array_column($cart, 'quantity'));
+    }
+
     public function showCartTable()
     {
         $products = Product::all();
-
-        return view('cart', compact('products'));
+        $totalItems = $this->getCartItemCount();
+        return view('cart', compact('products', 'totalItems'));
     }
+    
     public function addToCart($id)
     {
         $product = Product::find($id);
@@ -29,6 +36,7 @@ class ProductController extends Controller
             $cart = [
                 $id => [
                     "name" => $product->name,
+                    "description" => $product->description,
                     "quantity" => 1,
                     "price" => $product->price,
                     "photo" => $product->photo
@@ -51,6 +59,7 @@ class ProductController extends Controller
 
         $cart[$id] = [
             "name" => $product->name,
+            "description" => $product->description,
             "quantity" => 1,
             "price" => $product->price,
             "photo" => $product->photo
@@ -81,15 +90,34 @@ class ProductController extends Controller
         }
     }
 
+    public function updateCart(Request $request)
+    {
+        if ($request->id && $request->quantity) {
+            $cart = session()->get('cart');
+            $cart[$request->id]['quantity'] = $request->quantity;
+            session()->put('cart', $cart);
+
+            $subtotal = $cart[$request->id]['price'] * $cart[$request->id]['quantity'];
+            $total = array_sum(array_column($cart, 'quantity')) * $cart[$request->id]['price'];
+
+            return response()->json([
+                'subtotal' => $subtotal,
+                'total' => $total
+            ]);
+        }
+    }
+
+
     public function clearCart()
     {
         session()->forget('cart');
         return redirect()->back();
     }
-    
+
     public function showProducts()
     {
         $products = Product::all();
-        return view('welcome', compact('products'));
+        $totalItems = $this->getCartItemCount();
+        return view('welcome', compact('products', 'totalItems'));
     }
 }

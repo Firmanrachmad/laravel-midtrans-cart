@@ -22,6 +22,7 @@ Route::get('/', [ProductController::class, 'showProducts']);
 
 Route::get('cart', [ProductController::class, 'showCartTable']);
 Route::get('add-to-cart/{id}', [ProductController::class, 'addToCart']);
+Route::patch('update-cart', [ProductController::class, 'updateCart']);
 
 Route::delete('remove-from-cart', [ProductController::class, 'removeCartItem']);
 Route::get('clear-cart', [ProductController::class, 'clearCart']);
